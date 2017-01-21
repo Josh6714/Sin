@@ -14,6 +14,7 @@ public class EnemyBullet : MonoBehaviour {
         PlayerT = player.GetComponent<Transform>();
         distance = PlayerT.position.x - transform.position.x;
         speed = Vector3.Normalize(PlayerT.position - transform.position) * 5;
+        transform.right = PlayerT.position - transform.position;
 
 
 

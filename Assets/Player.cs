@@ -13,9 +13,14 @@ public class Player : Character {
     float jumpHeight;
     float jumpHeightMax = 3.5f;
 
+	private Animator animator;
+	private SpriteRenderer spriteRenderer;
+
 	// Use this for initialization
 	void Start () {
         speed = 7.5f;
+		animator = GetComponent<Animator>();
+		spriteRenderer = GetComponent<SpriteRenderer>();
 	}
 	
 	// Update is called once per frame
@@ -25,14 +30,22 @@ public class Player : Character {
 
     private Vector2 Movement()
     {
-        if(Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.A))
         {
             directionVector = Vector3.left * speed * Time.smoothDeltaTime;
+			if (spriteRenderer.flipX)
+			{
+				spriteRenderer.flipX = false;
+			}
         }
-        else if(Input.GetKey(KeyCode.D))
+        else if (Input.GetKey(KeyCode.D))
         {
             directionVector = Vector3.right * speed * Time.smoothDeltaTime;
-        }
+			if (!spriteRenderer.flipX)
+			{
+				spriteRenderer.flipX = true;
+			}
+		}
         else
         {
             directionVector = Vector3.zero * speed * Time.smoothDeltaTime;
@@ -44,7 +57,8 @@ public class Player : Character {
             spaceDown = true;
             jumping = true;
             canJump = false;
-        }
+			animator.SetTrigger("playerJump");
+		}
         if(Input.GetKeyDown(KeyCode.Space) && spaceDown)
         {
             spaceDown = false;

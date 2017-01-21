@@ -8,8 +8,12 @@ public class Enemy : MonoBehaviour {
     Transform playerT;
     float speed = 5f;
     bool moveTowardPlayer = false;
-	// Use this for initialization
-	void Start () {
+    bool shootAtPlayer = false;
+    float timer = 1.5f;
+
+    public GameObject bullet;
+    // Use this for initialization
+    void Start () {
         player = GameObject.FindWithTag("Player");
         playerT = player.GetComponent<Transform>();
 
@@ -23,9 +27,15 @@ public class Enemy : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         
-        if (moveTowardPlayer == true)
+        if (moveTowardPlayer)
         {
             MoveTowardPlayer();
+
+        }
+
+        if (shootAtPlayer)
+        {
+            Shoot();
         }
 		
 	}
@@ -34,9 +44,16 @@ public class Enemy : MonoBehaviour {
     {
         if (collision.gameObject.tag == "Player")
         {
-            Debug.Log("Yay Collided");
-            moveTowardPlayer = true;
-               
+
+            if (name == "Melee")
+            {
+                moveTowardPlayer = true;
+            }
+            else if (name == "Archer")
+            {
+                shootAtPlayer = true;
+            }
+
         }
     }
 
@@ -44,17 +61,52 @@ public class Enemy : MonoBehaviour {
     {
         if (collision.gameObject.tag == "Player")
         {
-            moveTowardPlayer = false;
+            if (name == "Melee")
+            {
+                moveTowardPlayer = false;
+            }
+            else if (name == "Archer")
+            {
+                shootAtPlayer = false;
+            }
         }
     }
 
     void MoveTowardPlayer()
     {
         
-        if (Vector2.Distance(transform.position, playerT.position) > 2)
+        if (Vector2.Distance(transform.position, playerT.position) > 1.5f)
         {
             transform.position = Vector2.MoveTowards(transform.position, playerT.position, speed * Time.deltaTime);
         }
+        else
+        {
+            Attack();
+        }
        
     }
+
+    void Attack()
+    {
+        
+        timer -= Time.deltaTime;
+        if (timer <= 0)
+        {
+            int damage = Random.Range(10, 16);
+            Debug.Log(damage);
+
+            timer = 1.5f; 
+        }
+    }
+
+    void Shoot()
+    {
+        timer -= Time.deltaTime;
+        if (timer <= 0)
+        {
+            Instantiate(bullet, transform.position, Quaternion.identity);
+            timer = 2;
+        }
+    }
+
 }

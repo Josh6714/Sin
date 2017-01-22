@@ -38,7 +38,6 @@ public class Sun : MonoBehaviour
         magnitude = camHeight - GetComponent<SpriteRenderer>().bounds.extents.y;
         //frequency =((camWidth / camHeight) / Mathf.PI);
         frequency = (cam.pixelHeight / 200f) / (Mathf.PI * 10.35f);
-        Debug.Log(frequency);
         
 
         // Adjust pos and axis
@@ -76,7 +75,6 @@ public class Sun : MonoBehaviour
 
         if (day)
         {
-            Debug.Log(camPos);
             transform.position += move;
         }
         //else

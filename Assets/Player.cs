@@ -9,9 +9,9 @@ public class Player : Character {
     bool jumping = false;
     bool canJump = true;
 
-    float jumpSpeed = 15.0f;
-    float jumpHeight;
-    float jumpHeightMax = 3.5f;
+    public float jumpSpeed = 15.0f;
+    public float jumpHeightMax = 5.5f;
+	private float jumpHeight;
 
 	private Animator animator;
 	private SpriteRenderer spriteRenderer;

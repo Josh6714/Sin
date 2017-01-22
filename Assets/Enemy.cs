@@ -4,40 +4,68 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour {
 
+	public bool DefaultSpriteDirectionIsLeft = true;
+
     GameObject player;
     Transform playerT;
     float speed = 5f;
     bool moveTowardPlayer = false;
     bool shootAtPlayer = false;
+	private bool isAttacking = false;
     float timer = 1.5f;
+	private int localscaleflip;
 
-    public GameObject bullet;
+	private Animator animator;
+	private SpriteRenderer spriteRenderer;
+
+	public GameObject bullet;
     // Use this for initialization
     void Start () {
         player = GameObject.FindWithTag("Player");
         playerT = player.GetComponent<Transform>();
+		animator = GetComponent<Animator>();
+		spriteRenderer = GetComponent<SpriteRenderer>();
 
-        if (player == null)
+		if (player == null)
         {
             Debug.LogError("Player is Null");
         }
-		
+
+		localscaleflip = DefaultSpriteDirectionIsLeft ? 1 : -1;
+
 	}
 	
 	// Update is called once per frame
-	void Update () {
-        
-        if (moveTowardPlayer)
-        {
-            MoveTowardPlayer();
-
-        }
-
-        if (shootAtPlayer)
-        {
-            Shoot();
-        }
+	void Update ()
+	{
+		if (playerT.position.x > transform.position.x)
+		{
+			if ((DefaultSpriteDirectionIsLeft && !spriteRenderer.flipX) || (!DefaultSpriteDirectionIsLeft && spriteRenderer.flipX))
+			{
+				spriteRenderer.flipX = DefaultSpriteDirectionIsLeft ? true : false;
+			}
+		}
+		else if ((DefaultSpriteDirectionIsLeft && spriteRenderer.flipX) || (!DefaultSpriteDirectionIsLeft && !spriteRenderer.flipX))
+		{
+			spriteRenderer.flipX = DefaultSpriteDirectionIsLeft ? false : true;
+		}
 		
+		if (isAttacking && !animator.GetCurrentAnimatorStateInfo(0).IsTag("attackState"))
+		{
+			isAttacking = false;
+			Shoot();
+		}
+
+		if (moveTowardPlayer)
+		{
+			MoveTowardPlayer();
+		}
+
+		if (shootAtPlayer)
+		{
+			// This needs to be called after the animation check of attack state.
+			PrepareToShoot();
+		}
 	}
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -88,7 +116,6 @@ public class Enemy : MonoBehaviour {
 
     void Attack()
     {
-        
         timer -= Time.deltaTime;
         if (timer <= 0)
         {
@@ -101,12 +128,18 @@ public class Enemy : MonoBehaviour {
 
     void Shoot()
     {
-        timer -= Time.deltaTime;
-        if (timer <= 0)
-        {
-            Instantiate(bullet, transform.position, Quaternion.identity);
-            timer = 2;
-        }
+        Instantiate(bullet, transform.position, Quaternion.identity);
     }
+
+	private void PrepareToShoot()
+	{
+		timer -= Time.deltaTime;
+		if (timer <= 0)
+		{
+			animator.SetTrigger("attack");
+			isAttacking = true;
+			timer = 2;
+		}
+	}
 
 }
